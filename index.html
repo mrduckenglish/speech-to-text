@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Speech Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .columns {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .column {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background: white;
+    }
+
+    .header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .entry {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+    }
+
+    .interim {
+      color: gray;
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    .spacer {
+      height: 80px; /* tạo khoảng trống cuối trang */
+    }
+
+    .watermark {
+      text-align: right;
+      font-size: 14px;
+      color: #888;
+      opacity: 0.7;
+      font-style: italic;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="columns">
+    <div class="column" id="english">
+      <div class="header">English (Live)</div>
+      <div id="engFinals"></div>
+      <div id="engInterim" class="interim"></div>
+    </div>
+
+    <div class="column" id="vietnamese">
+      <div class="header">Vietnamese (Translated)</div>
+      <div id="vieFinals"></div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="watermark">MrDuckEnglish</div>
+
+  <script>
+    const engFinals = document.getElementById('engFinals');
+    const engInterim = document.getElementById('engInterim');
+    const vieFinals = document.getElementById('vieFinals');
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = async function(event) {
+      let interimTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          engInterim.textContent = '';
+          addText(transcript);
+          const translated = await translateText(transcript);
+          addTranslation(translated);
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      engInterim.textContent = interimTranscript;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
+    function addText(text) {
+      const div = document.createElement('div');
+      div.className = 'entry';
+      div.textContent = text;
+      engFinals.appendChild(div);
+    }
+
+    function addTranslation(text) {
+      const div = document.createElement('div');
+      div.className = 'entry';
+      div.textContent = text;
+      vieFinals.appendChild(div);
+    }
+
+    async function translateText(text) {
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await res.json();
+      return data[0].map(item => item[0]).join('');
+    }
+
+    recognition.start();
+  </script>
+
+</body>
+</html>
