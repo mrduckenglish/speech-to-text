@@ -45,7 +45,7 @@
     }
 
     .spacer {
-      height: 80px; /* tạo khoảng trống cuối trang */
+      height: 80px;
     }
 
     .watermark {
@@ -101,6 +101,19 @@
       }
       engInterim.textContent = interimTranscript;
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
+    recognition.onend = function() {
+      setTimeout(() => {
+        recognition.start();
+      }, 500);
+    };
+
+    recognition.onerror = function(event) {
+      console.error("Speech Recognition Error:", event.error);
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        alert("Trình duyệt không cho phép truy cập micro. Hãy kiểm tra lại quyền cấp microphone.");
+      }
     };
 
     function addText(text) {
