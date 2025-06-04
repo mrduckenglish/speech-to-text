@@ -32,13 +32,23 @@
     }
 
     .entry {
+      font-weight: bold;
       margin-bottom: 8px;
       padding-bottom: 8px;
       border-bottom: 1px solid #eee;
       font-size: 16px;
     }
 
+    .translated {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      color: blue;
+    }
+
     .interim {
+      font-weight: bold;
       color: gray;
       font-style: italic;
       margin-top: 10px;
@@ -56,20 +66,25 @@
       font-style: italic;
       margin-top: 10px;
     }
+
+    .small {
+      font-size: 10px;
+      color: #888;
+      opacity: 0.7;
+      font-style: italic;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-
+  <div>MrDuckEnglish: "Love it? Be a hero! Buy me a coffee!"</div>
+  <div class="small">Vietcombank - STK: 9865100199 - NGUYEN CONG DUC</div>
+<br>
   <div class="columns">
     <div class="column" id="english">
-      <div class="header">English (Live)</div>
+      <div class="header">Speech-to-text (Live)</div>
       <div id="engFinals"></div>
       <div id="engInterim" class="interim"></div>
-    </div>
-
-    <div class="column" id="vietnamese">
-      <div class="header">Vietnamese (Translated)</div>
-      <div id="vieFinals"></div>
     </div>
   </div>
 
@@ -79,7 +94,7 @@
   <script>
     const engFinals = document.getElementById('engFinals');
     const engInterim = document.getElementById('engInterim');
-    const vieFinals = document.getElementById('vieFinals');
+    const vieFinals = document.getElementById('engFinals');
 
     const recognition = new webkitSpeechRecognition();
     recognition.lang = 'en-US';
@@ -125,7 +140,7 @@
 
     function addTranslation(text) {
       const div = document.createElement('div');
-      div.className = 'entry';
+      div.className = 'translated';
       div.textContent = text;
       vieFinals.appendChild(div);
     }
